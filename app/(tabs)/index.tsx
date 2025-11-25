@@ -6,11 +6,11 @@ export default function ProfileScreen() {
       <View style={styles.profileContainer}>
         <Image
           source={{
-            uri: 'https://via.placeholder.com/200/000000/FFFFFF?text=Profile',
+            uri: 'https://upload.wikimedia.org/wikipedia/commons/6/60/John_Cena_July_2018.jpg',
           }}
           style={styles.profileImage}
         />
-        <Text style={styles.profileName}>Utilizator</Text>
+        <Text style={styles.profileName}>John Cena</Text>
       </View>
     </View>
   );
@@ -29,10 +29,10 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     width: 150,
-    height: 150,
-    borderRadius: 75,
+    height: 250,
+    borderRadius: 40,
     backgroundColor: '#ddd',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   profileName: {
     fontSize: 24,
