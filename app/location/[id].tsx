@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { ActivityIndicator, Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 export default function LocationDetailScreen() {
@@ -7,6 +17,15 @@ export default function LocationDetailScreen() {
   const router = useRouter();
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedDescription, setGeneratedDescription] = useState<string | null>(null);
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const theme = {
+    background: isDark ? '#0f1115' : '#fff',
+    surface: isDark ? '#1c1f24' : '#fff',
+    text: isDark ? '#f5f7fb' : '#333',
+    muted: isDark ? '#a0a6b5' : '#666',
+    border: isDark ? '#2a2d34' : '#eee',
+  };
 
   // Parse location data from route params
   let locationData = null;
@@ -26,8 +45,8 @@ export default function LocationDetailScreen() {
 
   if (!locationData) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Locație negăsită</Text>
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <Text style={[styles.errorText, { color: theme.text }]}>Locație negăsită</Text>
         {id && (
           <Text style={[styles.errorText, { fontSize: 12, marginTop: 10 }]}>
             ID: {id.substring(0, 50)}...
@@ -126,33 +145,43 @@ export default function LocationDetailScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={[styles.container, { backgroundColor: theme.background }]}
+      showsVerticalScrollIndicator={false}
+    >
       <Image
         source={{ uri: locationData.image || locationData.image_url || 'https://via.placeholder.com/400' }}
         style={styles.headerImage}
         resizeMode="cover"
       />
       
-      <View style={styles.content}>
-        <Text style={styles.title}>{locationData.name}</Text>
+      <View style={[styles.content, { backgroundColor: theme.background }]}>
+        <Text style={[styles.title, { color: theme.text }]}>{locationData.name}</Text>
         
         {locationData.address && (
-          <Text style={styles.address}>📍 {locationData.address}</Text>
+          <Text style={[styles.address, { color: theme.muted }]}>📍 {locationData.address}</Text>
         )}
 
         {locationData.rating && (
           <View style={styles.ratingContainer}>
-            <Text style={styles.rating}>⭐ {locationData.rating}</Text>
+            <Text style={[styles.rating, { color: isDark ? '#f5c451' : '#FF6B35' }]}>
+              ⭐ {locationData.rating}
+            </Text>
           </View>
         )}
 
         <View style={styles.descriptionContainer}>
-          <Text style={styles.descriptionLabel}>Descriere</Text>
-          <Text style={styles.description}>{currentDescription}</Text>
+          <Text style={[styles.descriptionLabel, { color: theme.text }]}>Descriere</Text>
+          <Text style={[styles.description, { color: theme.muted }]}>{currentDescription}</Text>
         </View>
 
         <TouchableOpacity
-          style={[styles.button, styles.generateButton, isGenerating && styles.buttonDisabled]}
+          style={[
+            styles.button,
+            styles.generateButton,
+            { backgroundColor: isDark ? '#6c63ff' : '#6366f1' },
+            isGenerating && styles.buttonDisabled,
+          ]}
           onPress={handleGenerateDescription}
           disabled={isGenerating}
         >
@@ -167,7 +196,11 @@ export default function LocationDetailScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.button, styles.reservationButton]}
+          style={[
+            styles.button,
+            styles.reservationButton,
+            { backgroundColor: isDark ? '#1ebe6b' : '#25D366' },
+          ]}
           onPress={handleReservation}
         >
           <Text style={styles.buttonText}>📱 Rezervă</Text>

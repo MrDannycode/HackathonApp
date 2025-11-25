@@ -42,6 +42,47 @@ To learn more about developing your project with Expo, look at the following res
 - [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
 - [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
+## Building APK
+
+Pentru a genera un fișier .apk, urmează acești pași:
+
+### 1. Instalează EAS CLI
+```bash
+npm install -g eas-cli
+```
+
+### 2. Autentifică-te în Expo
+```bash
+eas login
+```
+
+### 3. Configurează proiectul (prima dată)
+```bash
+eas build:configure
+```
+
+### 4. Generează APK-ul
+```bash
+eas build --platform android --profile preview
+```
+
+Sau pentru build de producție:
+```bash
+eas build --platform android --profile production
+```
+
+### 5. Descarcă APK-ul
+După ce build-ul este finalizat, vei primi un link pentru descărcare. Poți descărca APK-ul direct sau folosește:
+```bash
+eas build:list
+```
+
+### Notă
+- Build-urile se fac în cloud pe serverele Expo
+- Prima dată poate dura 10-20 minute
+- Vei primi un link de descărcare când build-ul este gata
+- APK-ul va fi disponibil pentru descărcare timp de 30 de zile
+
 ## Join the community
 
 Join our community of developers creating universal apps.

@@ -12,6 +12,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "ro.thecon.thefeedapp",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -43,6 +44,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "926537ad-8c51-41da-a504-8f99238efc8d"
+      }
     }
   }
 }

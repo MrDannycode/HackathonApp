@@ -1,13 +1,26 @@
 import LocationCard from '@/components/LocationCard';
 import MapViewWrapper from '@/components/MapViewWrapper';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function ExploreScreen() {
   const router = useRouter();
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
   const [locations, setLocations] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
+  const theme = {
+    background: isDark ? '#0f1115' : '#f5f5f5',
+    surface: isDark ? '#1c1f24' : '#fff',
+    border: isDark ? '#2a2d34' : '#eee',
+    text: isDark ? '#f5f7fb' : '#333',
+    muted: isDark ? '#a0a6b5' : '#666',
+    toggleActive: isDark ? '#f5f7fb' : '#000',
+  };
 
   const handleLocationPress = (location: any) => {
     // Navigate to detail screen with location data
@@ -67,10 +80,31 @@ export default function ExploreScreen() {
       });
   }, []);
 
-  const initialRegion = locations.length > 0
+  const filteredLocations = locations.filter(location => {
+    const text = searchQuery.trim().toLowerCase();
+    const matchesSearch =
+      !text ||
+      location.name?.toLowerCase().includes(text) ||
+      location.address?.toLowerCase().includes(text) ||
+      location.description?.toLowerCase().includes(text);
+
+    return matchesSearch;
+  });
+
+  const displayLocations = filteredLocations;
+
+  const fallbackLocation = displayLocations[0] || locations[0];
+
+  const initialRegion = fallbackLocation
     ? {
-        latitude: locations[0]?.coords?.lat || locations[0]?.coordinates?.lat || 46.77,
-        longitude: locations[0]?.coords?.lng || locations[0]?.coordinates?.long || 23.59,
+        latitude:
+          fallbackLocation?.coords?.lat ||
+          fallbackLocation?.coordinates?.lat ||
+          46.77,
+        longitude:
+          fallbackLocation?.coords?.lng ||
+          fallbackLocation?.coordinates?.long ||
+          23.59,
         latitudeDelta: 0.1,
         longitudeDelta: 0.1,
       }
@@ -82,21 +116,77 @@ export default function ExploreScreen() {
       };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.toggleContainer}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={[
+            styles.searchInput,
+            {
+              backgroundColor: theme.surface,
+              color: theme.text,
+              borderColor: theme.border,
+            },
+          ]}
+          placeholder="Caută locații..."
+          placeholderTextColor={theme.muted}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          returnKeyType="search"
+        />
+      </View>
+
+      <View
+        style={[
+          styles.toggleContainer,
+          {
+            backgroundColor: theme.surface,
+            shadowOpacity: isDark ? 0 : 0.1,
+          },
+        ]}
+      >
         <TouchableOpacity
-          style={[styles.toggleButton, viewMode === 'list' && styles.toggleButtonActive]}
+          style={[
+            styles.toggleButton,
+            viewMode === 'list' && [
+              styles.toggleButtonActive,
+              { backgroundColor: theme.toggleActive },
+            ],
+          ]}
           onPress={() => setViewMode('list')}
         >
-          <Text style={[styles.toggleText, viewMode === 'list' && styles.toggleTextActive]}>
+          <Text
+            style={[
+              styles.toggleText,
+              { color: theme.muted },
+              viewMode === 'list' && [
+                styles.toggleTextActive,
+                { color: isDark ? '#000' : '#fff' },
+              ],
+            ]}
+          >
             Listă
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.toggleButton, viewMode === 'map' && styles.toggleButtonActive]}
+          style={[
+            styles.toggleButton,
+            viewMode === 'map' && [
+              styles.toggleButtonActive,
+              { backgroundColor: theme.toggleActive },
+            ],
+          ]}
           onPress={() => setViewMode('map')}
         >
-          <Text style={[styles.toggleText, viewMode === 'map' && styles.toggleTextActive]}>
+          <Text
+            style={[
+              styles.toggleText,
+              { color: theme.muted },
+              viewMode === 'map' && [
+                styles.toggleTextActive,
+                { color: isDark ? '#000' : '#fff' },
+              ],
+            ]}
+          >
             Hartă
           </Text>
         </TouchableOpacity>
@@ -104,7 +194,7 @@ export default function ExploreScreen() {
 
       {viewMode === 'list' ? (
         <FlatList
-          data={locations}
+          data={displayLocations}
           keyExtractor={(item, i) => i.toString()}
           renderItem={({ item }) => (
             <LocationCard
@@ -114,11 +204,21 @@ export default function ExploreScreen() {
           )}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Text style={[styles.emptyTitle, { color: theme.text }]}>
+                Nicio locație găsită
+              </Text>
+              <Text style={[styles.emptySubtitle, { color: theme.muted }]}>
+                Ajustează căutarea sau filtrele pentru a vedea alte rezultate.
+              </Text>
+            </View>
+          }
         />
       ) : (
-        <MapViewWrapper 
-          initialRegion={initialRegion} 
-          locations={locations}
+        <MapViewWrapper
+          initialRegion={initialRegion}
+          locations={displayLocations}
           onMarkerPress={handleLocationPress}
         />
       )}
@@ -130,6 +230,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  searchContainer: {
+    paddingHorizontal: 12,
+    paddingTop: 12,
+  },
+  searchInput: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#333',
+    borderWidth: 1,
+    borderColor: '#eee',
   },
   toggleContainer: {
     flexDirection: 'row',

@@ -1,20 +1,44 @@
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function LocationCard({ location, onPress }) {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
-      <View style={styles.card}>
-        <Image 
-          source={{ uri: location.image || location.image_url || location.poza || location.photo }} 
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: isDark ? '#1c1f24' : '#fff',
+            borderColor: isDark ? '#2a2d34' : '#fff',
+            shadowOpacity: isDark ? 0 : 0.1,
+          },
+        ]}
+      >
+        <Image
+          source={{ uri: location.image || location.image_url || location.poza || location.photo }}
           style={styles.image}
           resizeMode="cover"
         />
         <View style={styles.content}>
-          <Text style={styles.title} numberOfLines={2}>
+          <Text
+            style={[
+              styles.title,
+              { color: isDark ? '#f7f7f7' : '#333' },
+            ]}
+            numberOfLines={2}
+          >
             {location.name || location.nume || 'Locație'}
           </Text>
           <View style={styles.ratingContainer}>
-            <Text style={styles.ratingText}>
+            <Text
+              style={[
+                styles.ratingText,
+                { color: isDark ? '#f5c451' : '#FF6B35' },
+              ]}
+            >
               ⭐ {location.rating || 'N/A'}
             </Text>
           </View>
@@ -26,7 +50,6 @@ export default function LocationCard({ location, onPress }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     marginBottom: 16,
     marginHorizontal: 4,
