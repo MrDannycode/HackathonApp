@@ -1,18 +1,14 @@
-import LocationCard from '@/components/LocationCard';
-import MapViewWrapper from '@/components/MapViewWrapper';
-import { useEffect, useState } from 'react';
-import { FlatList, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MapView, { Marker, UrlTile } from 'react-native-maps';
+import LocationCard from '../components/LocationCard';
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation, locations }) {
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
-  const [locations, setLocations] = useState([]);
 
-  useEffect(() => {
-    fetch('https://thecon.ro/hackathon/locations.json')
-      .then(res => res.json())
-      .then(data => setLocations(data))
-      .catch(err => console.error('Error fetching locations:', err));
-  }, []);
+  const toggleView = () => {
+    setViewMode(viewMode === 'list' ? 'map' : 'list');
+  };
 
   const initialRegion = locations.length > 0
     ? {
@@ -57,10 +53,8 @@ export default function HomeScreen() {
             <LocationCard
               location={item}
               onPress={() => {
-                // Switch to map view and focus on this location (only on native)
-                if (Platform.OS !== 'web') {
-                  setViewMode('map');
-                }
+                // Optional: Navigate to detail screen or show info
+                navigation.navigate('Harta', { selectedLocation: item });
               }}
             />
           )}
@@ -68,7 +62,29 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
         />
       ) : (
-        <MapViewWrapper initialRegion={initialRegion} locations={locations} />
+        <MapView
+          style={styles.map}
+          initialRegion={initialRegion}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
+        >
+          <UrlTile
+            urlTemplate="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maximumZ={19}
+            flipY={false}
+          />
+          {locations.map((loc, index) => (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: loc.coords?.lat || 0,
+                longitude: loc.coords?.lng || 0,
+              }}
+              title={loc.name}
+              description={loc.address}
+            />
+          ))}
+        </MapView>
       )}
     </View>
   );
@@ -114,5 +130,8 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 12,
     paddingBottom: 20,
+  },
+  map: {
+    flex: 1,
   },
 });
