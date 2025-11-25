@@ -1,11 +1,11 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Button, Text, View } from "react-native";
+import { Button, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import ExploreScreen from './screens/ExploreScreen';
 import ProfileScreen from './screens/ProfileScreen';
-
+  
 
 
 const Stack = createNativeStackNavigator();
