@@ -32,14 +32,18 @@ export default function MapViewWrapper({ initialRegion, locations }: MapViewWrap
         flipY={false}
       />
       {locations.map((loc, index) => {
-        if (!loc.coords?.lat || !loc.coords?.lng) return null;
+        // Support both coordinate formats
+        const lat = loc.coords?.lat || loc.coordinates?.lat;
+        const lng = loc.coords?.lng || loc.coordinates?.long;
+        
+        if (!lat || !lng) return null;
         
         return (
           <Marker
             key={index}
             coordinate={{
-              latitude: loc.coords.lat,
-              longitude: loc.coords.lng,
+              latitude: lat,
+              longitude: lng,
             }}
             title={loc.name}
             description={loc.address}

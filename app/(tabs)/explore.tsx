@@ -8,16 +8,52 @@ export default function ExploreScreen() {
   const [locations, setLocations] = useState([]);
 
   useEffect(() => {
-    fetch('https://thecon.ro/hackathon/locations.json')
-      .then(res => res.json())
-      .then(data => setLocations(data))
-      .catch(err => console.error('Error fetching locations:', err));
+    fetch('https://thecon.ro/wp-content/uploads/2025/11/locatii.json')
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Response is not JSON');
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data)) {
+          // Normalize data structure to support both formats
+          const normalizedData = data.map(item => ({
+            ...item,
+            // Support both coordinate formats
+            coords: item.coordinates 
+              ? { lat: item.coordinates.lat, lng: item.coordinates.long }
+              : item.coords,
+            // Support both image formats
+            image: item.image_url || item.image || item.poza || item.photo,
+            // Support both name formats
+            name: item.name || item.nume,
+            // Support both address formats
+            address: item.address || item.adresa,
+            // Support both description formats
+            description: item.short_description || item.description || item.descriere,
+          }));
+          setLocations(normalizedData);
+        } else {
+          console.warn('Data is not an array:', data);
+          setLocations([]);
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching locations:', err);
+        // Set empty array on error to prevent crashes
+        setLocations([]);
+      });
   }, []);
 
   const initialRegion = locations.length > 0
     ? {
-        latitude: locations[0]?.coords?.lat || 46.77,
-        longitude: locations[0]?.coords?.lng || 23.59,
+        latitude: locations[0]?.coords?.lat || locations[0]?.coordinates?.lat || 46.77,
+        longitude: locations[0]?.coords?.lng || locations[0]?.coordinates?.long || 23.59,
         latitudeDelta: 0.1,
         longitudeDelta: 0.1,
       }

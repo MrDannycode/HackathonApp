@@ -5,7 +5,7 @@ export default function LocationCard({ location, onPress }) {
     <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
       <View style={styles.card}>
         <Image 
-          source={{ uri: location.image || location.poza || location.photo }} 
+          source={{ uri: location.image || location.image_url || location.poza || location.photo }} 
           style={styles.image}
           resizeMode="cover"
         />
