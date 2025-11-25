@@ -14,10 +14,12 @@ interface MapViewWrapperProps {
       lat: number;
       lng: number;
     };
+    [key: string]: any;
   }>;
+  onMarkerPress?: (location: any) => void;
 }
 
-export default function MapViewWrapper({ initialRegion, locations }: MapViewWrapperProps) {
+export default function MapViewWrapper({ initialRegion, locations, onMarkerPress }: MapViewWrapperProps) {
   return (
     <View style={styles.webMapPlaceholder}>
       <Text style={styles.webMapText}>Hartă disponibilă doar pe iOS și Android</Text>

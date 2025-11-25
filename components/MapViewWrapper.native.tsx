@@ -15,10 +15,16 @@ interface MapViewWrapperProps {
       lat: number;
       lng: number;
     };
+    coordinates?: {
+      lat: number;
+      long: number;
+    };
+    [key: string]: any;
   }>;
+  onMarkerPress?: (location: any) => void;
 }
 
-export default function MapViewWrapper({ initialRegion, locations }: MapViewWrapperProps) {
+export default function MapViewWrapper({ initialRegion, locations, onMarkerPress }: MapViewWrapperProps) {
   return (
     <MapView
       style={styles.map}
@@ -47,6 +53,11 @@ export default function MapViewWrapper({ initialRegion, locations }: MapViewWrap
             }}
             title={loc.name}
             description={loc.address}
+            onPress={() => {
+              if (onMarkerPress) {
+                onMarkerPress(loc);
+              }
+            }}
           />
         );
       })}

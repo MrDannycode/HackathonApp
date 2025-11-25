@@ -1,11 +1,28 @@
 import LocationCard from '@/components/LocationCard';
 import MapViewWrapper from '@/components/MapViewWrapper';
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ExploreScreen() {
+  const router = useRouter();
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
   const [locations, setLocations] = useState([]);
+
+  const handleLocationPress = (location: any) => {
+    // Navigate to detail screen with location data
+    try {
+      const locationJson = JSON.stringify(location);
+      const locationParam = encodeURIComponent(locationJson);
+      console.log('Navigating to location:', location.name);
+      router.push({
+        pathname: '/location/[id]',
+        params: { id: locationParam },
+      });
+    } catch (error) {
+      console.error('Error navigating to location:', error);
+    }
+  };
 
   useEffect(() => {
     fetch('https://thecon.ro/wp-content/uploads/2025/11/locatii.json')
@@ -92,19 +109,18 @@ export default function ExploreScreen() {
           renderItem={({ item }) => (
             <LocationCard
               location={item}
-              onPress={() => {
-                // Switch to map view and focus on this location (only on native)
-                if (Platform.OS !== 'web') {
-                  setViewMode('map');
-                }
-              }}
+              onPress={() => handleLocationPress(item)}
             />
           )}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />
       ) : (
-        <MapViewWrapper initialRegion={initialRegion} locations={locations} />
+        <MapViewWrapper 
+          initialRegion={initialRegion} 
+          locations={locations}
+          onMarkerPress={handleLocationPress}
+        />
       )}
     </View>
   );
