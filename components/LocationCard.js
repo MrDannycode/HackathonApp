@@ -13,16 +13,6 @@ export default function LocationCard({ location, onPress }) {
           <Text style={styles.title} numberOfLines={2}>
             {location.name || location.nume || 'Locație'}
           </Text>
-          {location.address || location.adresa ? (
-            <Text style={styles.address} numberOfLines={1}>
-              📍 {location.address || location.adresa}
-            </Text>
-          ) : null}
-          {location.description || location.descriere ? (
-            <Text style={styles.description} numberOfLines={2}>
-              {location.description || location.descriere}
-            </Text>
-          ) : null}
           <View style={styles.ratingContainer}>
             <Text style={styles.ratingText}>
               ⭐ {location.rating || 'N/A'}
@@ -59,23 +49,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 6,
-  },
-  address: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 6,
-  },
-  description: {
-    fontSize: 13,
-    color: '#888',
     marginBottom: 8,
-    lineHeight: 18,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
   },
   ratingText: {
     fontSize: 16,
